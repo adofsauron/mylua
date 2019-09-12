@@ -61,7 +61,7 @@ void luaD_growstack(lua_State* L, int size) {
 }
 
 void luaD_throw(lua_State* L, int error) {
-    struct global_State* g = G(L);
+    global_State* g = G(L);
     if (L->errorjmp) {
         L->errorjmp->status = error;
         LUA_THROW(L->errorjmp);
@@ -93,7 +93,7 @@ int luaD_rawrunprotected(lua_State* L, Pfunc f, void* ud) {
 }
 
 static struct CallInfo* next_ci(lua_State* L, StkId func, int nresult) {
-    struct global_State* g = G(L);
+    global_State* g = G(L);
     struct CallInfo* ci;
     ci = luaM_realloc(L, NULL, 0, sizeof(struct CallInfo));
     ci->next = NULL;
@@ -204,7 +204,7 @@ int luaD_poscall(lua_State* L, StkId first_result, int nresult) {
     L->ci->next = NULL;
     
     // because we have not implement gc, so we should free ci manually
-    struct global_State* g = G(L);
+    global_State* g = G(L);
     (*g->frealloc)(g->ud, ci, sizeof(struct CallInfo), 0); 
 
     return LUA_OK;
@@ -224,7 +224,7 @@ int luaD_call(lua_State* L, StkId func, int nresult) {
 }
 
 static void reset_unuse_stack(lua_State* L, ptrdiff_t old_top) {
-    struct global_State* g = G(L);
+    global_State* g = G(L);
     for (StkId top = restorestack(L, old_top); top < L->top; top++) {
         if (top->value_.p) {
             (*g->frealloc)(g->ud, top->value_.p, sizeof(top->value_.p), 0);
@@ -240,7 +240,7 @@ int luaD_pcall(lua_State* L, Pfunc f, void* ud, ptrdiff_t oldtop, ptrdiff_t ef) 
     
     int status = luaD_rawrunprotected(L, f, ud);
     if (status != LUA_OK) {
-        struct global_State* g = G(L);
+        global_State* g = G(L);
         struct CallInfo* free_ci = L->ci;
         while(free_ci) {
             if (free_ci == old_ci) {

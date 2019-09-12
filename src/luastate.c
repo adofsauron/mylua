@@ -34,7 +34,7 @@ static void stack_init(lua_State* L) {
 }
 
 lua_State* lua_newstate(lua_Alloc alloc, void* ud) {
-    struct global_State* g;
+    global_State* g;
     lua_State* L;
     
     struct LG* lg = (struct LG*)(*alloc)(ud, NULL, LUA_TTHREAD, sizeof(struct LG));
@@ -66,7 +66,7 @@ static void free_stack(lua_State* L) {
 }
 
 void lua_close(lua_State* L) {
-    struct global_State* g = G(L);
+    global_State* g = G(L);
     lua_State* L1 = g->mainthread; // only mainthread can be close
     
     struct CallInfo* ci = &L1->base_ci;
